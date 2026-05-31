@@ -309,11 +309,6 @@
         min-height: 20px;
       }
 
-      .admin-auth-note {
-        color: #6f7e92;
-        font-size: 0.82rem;
-      }
-
       @media (max-width: 980px) {
         .kpi-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -348,21 +343,9 @@
 
       <section class="section-box admin-auth-wrap" id="adminAuthGate">
         <h1 class="admin-auth-title">관리자 로그인</h1>
-        <p class="admin-auth-desc">Supabase 관리자 이메일/비밀번호로 로그인하세요.</p>
+        <p class="admin-auth-desc">아이디와 비밀번호를 입력해 로그인하세요.</p>
         <form class="admin-auth-form" id="adminLoginForm">
-          <input
-            class="field-input"
-            id="adminAnonKeyInput"
-            placeholder="Supabase anon key (최초 1회)"
-            autocomplete="off"
-          />
-          <input
-            class="field-input"
-            id="adminEmailInput"
-            type="email"
-            placeholder="관리자 이메일"
-            autocomplete="username"
-          />
+          <input class="field-input" id="adminIdInput" placeholder="아이디" autocomplete="username" />
           <input
             class="field-input"
             id="adminPwInput"
@@ -372,7 +355,6 @@
           />
           <button class="btn primary" type="submit">로그인</button>
           <div class="admin-auth-error" id="adminAuthError"></div>
-          <div class="admin-auth-note">anon key는 처음 로그인할 때만 입력하면 됩니다.</div>
         </form>
       </section>
 
@@ -588,15 +570,16 @@
       const adminShell = document.querySelector(".admin-shell");
       const adminAuthGate = document.getElementById("adminAuthGate");
       const adminLoginForm = document.getElementById("adminLoginForm");
-      const adminAnonKeyInput = document.getElementById("adminAnonKeyInput");
-      const adminEmailInput = document.getElementById("adminEmailInput");
+      const adminIdInput = document.getElementById("adminIdInput");
       const adminPwInput = document.getElementById("adminPwInput");
       const adminAuthError = document.getElementById("adminAuthError");
       const adminLogoutBtn = document.getElementById("adminLogoutBtn");
 
       const backendConfig = window.AppBackend?.getConfig?.() || {};
       if (backendConfig.anonKey) anonKeyInput.value = backendConfig.anonKey;
-      if (backendConfig.anonKey) adminAnonKeyInput.value = backendConfig.anonKey;
+      const ADMIN_AUTH_STORAGE_KEY = "writingDiagAdminAuthed";
+      const ADMIN_ID = "admin";
+      const ADMIN_PW = "admin";
       let dashboardInitialized = false;
 
       const setAdminAuthedView = (authed) => {
@@ -825,19 +808,24 @@
 
       adminLoginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const anonKey = adminAnonKeyInput.value.trim();
-        const email = adminEmailInput.value.trim();
+        const id = adminIdInput.value.trim();
         const pw = adminPwInput.value.trim();
-        if (anonKey) {
-          window.AppBackend.setAnonKey(anonKey);
-          anonKeyInput.value = anonKey;
-        }
-        if (!email || !pw) {
-          adminAuthError.textContent = "이메일과 비밀번호를 입력해주세요.";
+        if (!id || !pw) {
+          adminAuthError.textContent = "아이디와 비밀번호를 입력해주세요.";
           return;
         }
+
         try {
-          await window.AppBackend.signInAdmin({ email, password: pw });
+          const canUseSupabaseAuth =
+            backendConfig.anonKey && window.AppBackend?.getConfig?.().mode === "supabase" && id.includes("@");
+
+          if (canUseSupabaseAuth) {
+            await window.AppBackend.signInAdmin({ email: id, password: pw });
+          } else if (!(id === ADMIN_ID && pw === ADMIN_PW)) {
+            throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
+          }
+
+          localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, "true");
           adminAuthError.textContent = "";
           setAdminAuthedView(true);
           initDashboard();
@@ -848,12 +836,15 @@
 
       adminLogoutBtn.addEventListener("click", async () => {
         try {
-          await window.AppBackend.signOut();
+          if (window.AppBackend?.getConfig?.().mode === "supabase") {
+            await window.AppBackend.signOut();
+          }
         } catch (_err) {
           // ignore sign-out errors and still hide dashboard on client
         }
+        localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
         setAdminAuthedView(false);
-        adminEmailInput.value = "";
+        adminIdInput.value = "";
         adminPwInput.value = "";
         adminAuthError.textContent = "";
       });
@@ -861,7 +852,8 @@
       const boot = async () => {
         try {
           const user = await window.AppBackend.getSessionUser();
-          const hasAdminSession = Boolean(user);
+          const localAuthed = localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === "true";
+          const hasAdminSession = localAuthed || Boolean(user);
           setAdminAuthedView(hasAdminSession);
           if (hasAdminSession) initDashboard();
         } catch (_e) {
