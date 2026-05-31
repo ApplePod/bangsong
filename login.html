@@ -39,9 +39,11 @@
     <script src="./font-controls.js"></script>
     <script>
       const loginBtn = document.getElementById("loginBtn");
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next");
       loginBtn.addEventListener("click", () => {
         localStorage.setItem("writingDiagLoggedIn", "true");
-        window.location.href = "./guide.html";
+        window.location.href = next === "project-join" ? "./project-join.html" : "./guide.html";
       });
     </script>
   </body>

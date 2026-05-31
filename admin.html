@@ -238,9 +238,89 @@
         color: #d64f45;
       }
 
+      .project-grid {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .project-card {
+        border: 1px solid #e5edf8;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+      }
+
+      .project-card .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .project-card .slug {
+        margin-top: 4px;
+        color: #7a8798;
+        font-size: 0.82rem;
+      }
+
+      .project-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .project-msg {
+        margin-top: 8px;
+        color: #5f6d80;
+        font-size: 0.84rem;
+      }
+
+      .question-editor {
+        margin-top: 10px;
+      }
+
+      .admin-auth-wrap {
+        max-width: 460px;
+        margin: 8vh auto 0;
+      }
+
+      .admin-auth-title {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .admin-auth-desc {
+        margin: 0 0 14px;
+        color: #6f7e92;
+        font-size: 0.92rem;
+      }
+
+      .admin-auth-form {
+        display: grid;
+        gap: 10px;
+      }
+
+      .admin-auth-error {
+        color: #d64f45;
+        font-size: 0.85rem;
+        min-height: 20px;
+      }
+
+      .admin-auth-note {
+        color: #6f7e92;
+        font-size: 0.82rem;
+      }
+
       @media (max-width: 980px) {
         .kpi-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .project-grid {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -260,10 +340,43 @@
     <main class="container">
       <div class="topbar">
         <div class="breadcrumb">Home &gt; 관리자 대쉬보드</div>
-        <a class="chip-link" href="./index.html">학습자 홈</a>
+        <div class="admin-actions">
+          <button class="btn ghost" id="adminLogoutBtn" hidden>로그아웃</button>
+          <a class="chip-link" href="./index.html">학습자 홈</a>
+        </div>
       </div>
 
-      <section class="admin-shell">
+      <section class="section-box admin-auth-wrap" id="adminAuthGate">
+        <h1 class="admin-auth-title">관리자 로그인</h1>
+        <p class="admin-auth-desc">Supabase 관리자 이메일/비밀번호로 로그인하세요.</p>
+        <form class="admin-auth-form" id="adminLoginForm">
+          <input
+            class="field-input"
+            id="adminAnonKeyInput"
+            placeholder="Supabase anon key (최초 1회)"
+            autocomplete="off"
+          />
+          <input
+            class="field-input"
+            id="adminEmailInput"
+            type="email"
+            placeholder="관리자 이메일"
+            autocomplete="username"
+          />
+          <input
+            class="field-input"
+            id="adminPwInput"
+            type="password"
+            placeholder="비밀번호"
+            autocomplete="current-password"
+          />
+          <button class="btn primary" type="submit">로그인</button>
+          <div class="admin-auth-error" id="adminAuthError"></div>
+          <div class="admin-auth-note">anon key는 처음 로그인할 때만 입력하면 됩니다.</div>
+        </form>
+      </section>
+
+      <section class="admin-shell" hidden>
         <div class="section-box admin-hero">
           <div>
             <h1>관리자 대쉬보드</h1>
@@ -332,6 +445,33 @@
 
         <div class="section-box">
           <div class="section-top">
+            <h2 class="section-title">프로젝트 운영</h2>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <div class="title">Supabase Anon Key</div>
+              <input id="anonKeyInput" class="field-input" placeholder="프로젝트 anon key 입력(최초 1회)" />
+            </div>
+            <div class="step">
+              <div class="title">새 프로젝트 생성</div>
+              <div class="filters">
+                <input id="projectNameInput" class="field-input" style="min-width: 220px" placeholder="프로젝트명 (예: A프로젝트)" />
+                <input id="projectSlugInput" class="field-input" style="min-width: 220px" placeholder="slug (예: a-project-2026)" />
+              </div>
+              <input id="projectDescInput" class="field-input" style="margin-top: 8px" placeholder="설명 (선택)" />
+              <div class="project-actions">
+                <button class="btn primary" id="saveAnonKeyBtn">키 저장</button>
+                <button class="btn success" id="createProjectBtn">프로젝트 생성</button>
+              </div>
+              <div class="project-msg" id="projectMsg"></div>
+            </div>
+          </div>
+          <div class="project-grid" id="projectGrid"></div>
+          <div class="question-editor" id="questionEditor"></div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-top">
             <h2 class="section-title">참여자 데이터</h2>
             <div class="filters">
               <input class="filter-input" id="searchInput" placeholder="학과 / 번호 검색" />
@@ -379,6 +519,8 @@
         </div>
       </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./backend-client.js"></script>
     <script src="./font-controls.js"></script>
     <script>
       const data = [
@@ -436,6 +578,39 @@
       const searchInput = document.getElementById("searchInput");
       const typeFilter = document.getElementById("typeFilter");
       const genderFilter = document.getElementById("genderFilter");
+      const projectGrid = document.getElementById("projectGrid");
+      const questionEditor = document.getElementById("questionEditor");
+      const projectMsg = document.getElementById("projectMsg");
+      const anonKeyInput = document.getElementById("anonKeyInput");
+      const projectNameInput = document.getElementById("projectNameInput");
+      const projectSlugInput = document.getElementById("projectSlugInput");
+      const projectDescInput = document.getElementById("projectDescInput");
+      const adminShell = document.querySelector(".admin-shell");
+      const adminAuthGate = document.getElementById("adminAuthGate");
+      const adminLoginForm = document.getElementById("adminLoginForm");
+      const adminAnonKeyInput = document.getElementById("adminAnonKeyInput");
+      const adminEmailInput = document.getElementById("adminEmailInput");
+      const adminPwInput = document.getElementById("adminPwInput");
+      const adminAuthError = document.getElementById("adminAuthError");
+      const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+
+      const backendConfig = window.AppBackend?.getConfig?.() || {};
+      if (backendConfig.anonKey) anonKeyInput.value = backendConfig.anonKey;
+      if (backendConfig.anonKey) adminAnonKeyInput.value = backendConfig.anonKey;
+      let dashboardInitialized = false;
+
+      const setAdminAuthedView = (authed) => {
+        adminAuthGate.hidden = authed;
+        adminShell.hidden = !authed;
+        adminLogoutBtn.hidden = !authed;
+      };
+
+      const initDashboard = () => {
+        if (dashboardInitialized) return;
+        dashboardInitialized = true;
+        renderProjects();
+        renderRows();
+      };
 
       const toPill = (value) =>
         `<span class="result-pill ${value === "O" ? "ok" : "no"}">${value}</span>`;
@@ -513,7 +688,188 @@
       typeFilter.addEventListener("change", renderRows);
       genderFilter.addEventListener("change", renderRows);
 
-      renderRows();
+      const renderQuestionEditor = async (project) => {
+        if (!project) {
+          questionEditor.innerHTML = "";
+          return;
+        }
+        let questions = [];
+        try {
+          questions = await window.AppBackend.getProjectQuestions(project.id);
+        } catch (e) {
+          questionEditor.innerHTML = `<p class="project-msg">문항 조회 실패: ${e.message}</p>`;
+          return;
+        }
+
+        questionEditor.innerHTML = `
+          <div class="section-box">
+            <div class="section-top">
+              <h2 class="section-title">문항 편집: ${project.name}</h2>
+            </div>
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>문항</th>
+                    <th>활성</th>
+                    <th>저장</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${questions
+                    .map(
+                      (q) => `
+                    <tr data-qid="${q.id}">
+                      <td>${q.question_no}</td>
+                      <td><input class="field-input q-prompt" value="${(q.prompt || "").replace(/"/g, "&quot;")}" /></td>
+                      <td><input type="checkbox" class="q-active" ${q.is_active ? "checked" : ""} /></td>
+                      <td><button class="btn ghost q-save">저장</button></td>
+                    </tr>`
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+        questionEditor.querySelectorAll(".q-save").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const tr = e.target.closest("tr");
+            const projectQuestionId = tr.dataset.qid;
+            const prompt = tr.querySelector(".q-prompt").value;
+            const isActive = tr.querySelector(".q-active").checked;
+            try {
+              await window.AppBackend.updateProjectQuestion({ projectQuestionId, prompt, isActive });
+              projectMsg.textContent = "문항 저장 완료";
+            } catch (err) {
+              projectMsg.textContent = `문항 저장 실패: ${err.message}`;
+            }
+          });
+        });
+      };
+
+      const renderProjects = async () => {
+        if (!window.AppBackend) return;
+        try {
+          const projects = await window.AppBackend.listProjects();
+          projectGrid.innerHTML = projects.length
+            ? projects
+                .map(
+                  (p) => `
+              <div class="project-card" data-project-id="${p.id}">
+                <div class="head">
+                  <b>${p.name}</b>
+                  <span class="tag">${p.is_active ? "활성" : "비활성"}</span>
+                </div>
+                <div class="slug">slug: ${p.slug} · code: ${p.access_code || "-"}</div>
+                <div class="project-actions">
+                  <button class="btn ghost open-project">문항 관리</button>
+                  <a class="btn primary" href="./diagnostic.html?project=${encodeURIComponent(p.slug)}">학생 링크</a>
+                </div>
+              </div>
+            `
+                )
+                .join("")
+            : `<p class="project-msg">아직 생성된 프로젝트가 없습니다.</p>`;
+
+          projectGrid.querySelectorAll(".open-project").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              const id = e.target.closest(".project-card").dataset.projectId;
+              const project = projects.find((p) => p.id === id);
+              await renderQuestionEditor(project);
+            });
+          });
+        } catch (e) {
+          projectGrid.innerHTML = `<p class="project-msg">프로젝트 목록 로드 실패: ${e.message}</p>`;
+        }
+      };
+
+      document.getElementById("saveAnonKeyBtn").addEventListener("click", () => {
+        window.AppBackend.setAnonKey(anonKeyInput.value.trim());
+        projectMsg.textContent = "Anon key 저장 완료";
+        renderProjects();
+      });
+
+      document.getElementById("createProjectBtn").addEventListener("click", async () => {
+        const name = projectNameInput.value.trim();
+        const slug = projectSlugInput.value.trim();
+        const description = projectDescInput.value.trim();
+        if (!name || !slug) {
+          projectMsg.textContent = "프로젝트명과 slug를 입력해주세요.";
+          return;
+        }
+        projectMsg.textContent = "프로젝트 생성 중...";
+        try {
+          // default: first active test id (mock mode handles internally)
+          let testId = "mock-test";
+          if (window.AppBackend.getConfig().mode === "supabase") {
+            const tests = await window.AppBackend.listTests();
+            testId = tests[0]?.id || "";
+          }
+          if (!testId) {
+            projectMsg.textContent = "활성 진단 테스트가 없어 프로젝트를 생성할 수 없습니다.";
+            return;
+          }
+          await window.AppBackend.createProject({ name, slug, description, testId });
+          projectMsg.textContent = "프로젝트 생성 완료";
+          projectNameInput.value = "";
+          projectSlugInput.value = "";
+          projectDescInput.value = "";
+          await renderProjects();
+        } catch (e) {
+          projectMsg.textContent = `프로젝트 생성 실패: ${e.message}`;
+        }
+      });
+
+      adminLoginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const anonKey = adminAnonKeyInput.value.trim();
+        const email = adminEmailInput.value.trim();
+        const pw = adminPwInput.value.trim();
+        if (anonKey) {
+          window.AppBackend.setAnonKey(anonKey);
+          anonKeyInput.value = anonKey;
+        }
+        if (!email || !pw) {
+          adminAuthError.textContent = "이메일과 비밀번호를 입력해주세요.";
+          return;
+        }
+        try {
+          await window.AppBackend.signInAdmin({ email, password: pw });
+          adminAuthError.textContent = "";
+          setAdminAuthedView(true);
+          initDashboard();
+        } catch (err) {
+          adminAuthError.textContent = `로그인 실패: ${err.message}`;
+        }
+      });
+
+      adminLogoutBtn.addEventListener("click", async () => {
+        try {
+          await window.AppBackend.signOut();
+        } catch (_err) {
+          // ignore sign-out errors and still hide dashboard on client
+        }
+        setAdminAuthedView(false);
+        adminEmailInput.value = "";
+        adminPwInput.value = "";
+        adminAuthError.textContent = "";
+      });
+
+      const boot = async () => {
+        try {
+          const user = await window.AppBackend.getSessionUser();
+          const hasAdminSession = Boolean(user);
+          setAdminAuthedView(hasAdminSession);
+          if (hasAdminSession) initDashboard();
+        } catch (_e) {
+          setAdminAuthedView(false);
+        }
+      };
+
+      boot();
     </script>
   </body>
 </html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>프로젝트 입장</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="topbar">
+        <div class="breadcrumb">Home &gt; 프로젝트 입장</div>
+        <a class="chip-link" href="./index.html">홈</a>
+      </div>
+
+      <section class="card" style="max-width: 620px; margin: 0 auto">
+        <h2>프로젝트 코드로 입장</h2>
+        <p class="muted">관리자가 전달한 프로젝트 코드(또는 링크)로 해당 그룹 진단에 참여하세요.</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="title">프로젝트 코드</div>
+            <input id="projectCode" class="field-input" placeholder="예: a3f19c7d" />
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <a class="btn ghost" href="./index.html">취소</a>
+          <button class="btn primary" id="joinProjectBtn">프로젝트 입장</button>
+        </div>
+        <p class="muted" id="joinMessage"></p>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./font-controls.js"></script>
+    <script src="./backend-client.js"></script>
+    <script>
+      const codeInput = document.getElementById("projectCode");
+      const msg = document.getElementById("joinMessage");
+      const btn = document.getElementById("joinProjectBtn");
+
+      btn.addEventListener("click", async () => {
+        const code = codeInput.value.trim();
+        if (!code) {
+          msg.textContent = "프로젝트 코드를 입력해주세요.";
+          return;
+        }
+
+        msg.textContent = "프로젝트 확인 중...";
+        try {
+          const project = await window.AppBackend.getProjectByCode(code);
+          if (!project) {
+            msg.textContent = "해당 코드의 프로젝트를 찾을 수 없습니다.";
+            return;
+          }
+          window.location.href = `./diagnostic.html?project=${encodeURIComponent(project.slug)}`;
+        } catch (e) {
+          msg.textContent = `입장 실패: ${e.message || "오류가 발생했습니다."}`;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -156,6 +156,16 @@ a {
   color: #fff;
 }
 
+.field-input {
+  width: 100%;
+  border: 1px solid #dce5f3;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 11px;
+  font-size: calc(14px * var(--font-scale));
+  color: #3b4657;
+}
+
 .section-title {
   margin: 26px 0 10px;
   font-size: calc(21px * var(--font-scale));

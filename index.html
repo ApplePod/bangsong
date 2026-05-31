@@ -49,7 +49,7 @@
       const joinBtn = document.getElementById("joinBtn");
       joinBtn.addEventListener("click", () => {
         const isLoggedIn = localStorage.getItem("writingDiagLoggedIn") === "true";
-        window.location.href = isLoggedIn ? "./guide.html" : "./login.html";
+        window.location.href = isLoggedIn ? "./project-join.html" : "./login.html?next=project-join";
       });
     </script>
   </body>
