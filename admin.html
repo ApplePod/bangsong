@@ -14,7 +14,7 @@
     <style>
       .admin-shell {
         display: grid;
-        gap: 14px;
+        gap: 12px;
       }
 
       .admin-hero {
@@ -51,7 +51,7 @@
         border: 1px solid #e4ebf5;
         border-radius: 12px;
         padding: 12px;
-        background: #fff;
+        background: #f9fcff;
       }
 
       .kpi-label {
@@ -83,7 +83,7 @@
       .section-box {
         border: 1px solid #e4ebf5;
         border-radius: 12px;
-        background: #fff;
+        background: #fcfdff;
         padding: 14px;
       }
 
@@ -116,10 +116,9 @@
         color: #3c4b60;
       }
 
-      .overview-grid {
-        margin-top: 10px;
+      .score-list {
+        margin-top: 8px;
         display: grid;
-        grid-template-columns: 1fr 1fr;
         gap: 10px;
       }
 
@@ -128,10 +127,33 @@
         gap: 7px;
       }
 
+      .score-item {
+        border: 1px solid #e8eef7;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+      }
+
+      .score-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 7px;
+      }
+
+      .score-head b {
+        font-size: 0.9rem;
+      }
+
+      .score-head span {
+        color: #6f7e92;
+        font-size: 0.84rem;
+      }
+
       .mini-item {
         border: 1px solid #e8eef7;
         border-radius: 10px;
-        background: #fbfdff;
+        background: #fff;
         padding: 9px 10px;
         display: flex;
         justify-content: space-between;
@@ -220,10 +242,6 @@
         .kpi-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-
-        .overview-grid {
-          grid-template-columns: 1fr;
-        }
       }
 
       @media (max-width: 640px) {
@@ -245,8 +263,8 @@
         <a class="chip-link" href="./index.html">학습자 홈</a>
       </div>
 
-      <section class="card admin-shell">
-        <div class="admin-hero">
+      <section class="admin-shell">
+        <div class="section-box admin-hero">
           <div>
             <h1>관리자 대쉬보드</h1>
             <p class="muted">참여 현황, 진단 결과, 문항 응답 데이터를 한 화면에서 관리합니다.</p>
@@ -284,23 +302,31 @@
           <div class="section-top">
             <h2 class="section-title">영역별 평균 점수</h2>
           </div>
-          <div class="overview-grid">
-            <div class="mini-item">
-              <b>적확한 어휘 사용</b><span>71.7점</span>
+          <div class="score-list">
+            <div class="score-item">
+              <div class="score-head">
+                <b>적확한 어휘 사용</b><span>71.7점</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 71.7%"></div></div>
             </div>
-            <div class="score-bar"><div class="score-fill" style="width: 71.7%"></div></div>
-            <div class="mini-item">
-              <b>어문 규범의 이해</b><span>20.2점</span>
+            <div class="score-item">
+              <div class="score-head">
+                <b>어문 규범의 이해</b><span>20.2점</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 20.2%"></div></div>
             </div>
-            <div class="score-bar"><div class="score-fill" style="width: 20.2%"></div></div>
-            <div class="mini-item">
-              <b>글의 조직 능력</b><span>23.8점</span>
+            <div class="score-item">
+              <div class="score-head">
+                <b>글의 조직 능력</b><span>23.8점</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 23.8%"></div></div>
             </div>
-            <div class="score-bar"><div class="score-fill" style="width: 23.8%"></div></div>
-            <div class="mini-item">
-              <b>적절한 문장</b><span>64.1점</span>
+            <div class="score-item">
+              <div class="score-head">
+                <b>적절한 문장</b><span>64.1점</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width: 64.1%"></div></div>
             </div>
-            <div class="score-bar"><div class="score-fill" style="width: 64.1%"></div></div>
           </div>
         </div>
 
