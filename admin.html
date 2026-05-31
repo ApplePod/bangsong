@@ -11,6 +11,232 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./app.css" />
+    <style>
+      .admin-shell {
+        display: grid;
+        gap: 14px;
+      }
+
+      .admin-hero {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .admin-hero h1 {
+        margin: 0;
+        font-size: clamp(1.4rem, 2.5vw, 2rem);
+        letter-spacing: -0.02em;
+      }
+
+      .admin-hero p {
+        margin: 8px 0 0;
+      }
+
+      .admin-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .kpi-card {
+        border: 1px solid #e4ebf5;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
+
+      .kpi-label {
+        color: #748296;
+        font-size: 0.82rem;
+      }
+
+      .kpi-value {
+        margin-top: 6px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .kpi-desc {
+        margin-top: 4px;
+        color: #7a8698;
+        font-size: 0.82rem;
+      }
+
+      .kpi-good {
+        color: #0f9e5e;
+      }
+
+      .kpi-warn {
+        color: #db7a00;
+      }
+
+      .section-box {
+        border: 1px solid #e4ebf5;
+        border-radius: 12px;
+        background: #fff;
+        padding: 14px;
+      }
+
+      .section-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+      }
+
+      .filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .filter-input {
+        border: 1px solid #dbe4f2;
+        border-radius: 10px;
+        padding: 9px 10px;
+        font-size: 0.9rem;
+        background: #fbfdff;
+        color: #3c4b60;
+      }
+
+      .overview-grid {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .mini-list {
+        display: grid;
+        gap: 7px;
+      }
+
+      .mini-item {
+        border: 1px solid #e8eef7;
+        border-radius: 10px;
+        background: #fbfdff;
+        padding: 9px 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .mini-item b {
+        font-size: 0.9rem;
+      }
+
+      .mini-item span {
+        color: #6f7e92;
+        font-size: 0.84rem;
+      }
+
+      .score-bar {
+        width: 100%;
+        height: 8px;
+        background: #e8eef7;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .score-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #79aeff 0%, #3182f6 100%);
+      }
+
+      .table-wrap {
+        margin-top: 10px;
+        overflow-x: auto;
+        border: 1px solid #e5edf8;
+        border-radius: 12px;
+      }
+
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1080px;
+        background: #fff;
+      }
+
+      .admin-table th,
+      .admin-table td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #eef3fb;
+        text-align: left;
+        font-size: 0.86rem;
+        white-space: nowrap;
+      }
+
+      .admin-table th {
+        position: sticky;
+        top: 0;
+        background: #f8fbff;
+        color: #728198;
+        font-weight: 700;
+      }
+
+      .admin-table tbody tr:hover {
+        background: #f9fbff;
+      }
+
+      .result-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.74rem;
+      }
+
+      .result-pill.ok {
+        background: #eafaf2;
+        color: #0f9e5e;
+      }
+
+      .result-pill.no {
+        background: #feefef;
+        color: #d64f45;
+      }
+
+      @media (max-width: 980px) {
+        .kpi-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .overview-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .kpi-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-actions .btn {
+          width: auto;
+          min-height: 38px;
+        }
+      }
+    </style>
   </head>
   <body>
     <main class="container">
@@ -19,64 +245,249 @@
         <a class="chip-link" href="./index.html">학습자 홈</a>
       </div>
 
-      <section class="card">
-        <h2 style="margin: 0">관리자 대쉬보드</h2>
-        <div class="btn-row">
-          <button class="btn primary">데이터 다운로드</button>
+      <section class="card admin-shell">
+        <div class="admin-hero">
+          <div>
+            <h1>관리자 대쉬보드</h1>
+            <p class="muted">참여 현황, 진단 결과, 문항 응답 데이터를 한 화면에서 관리합니다.</p>
+          </div>
+          <div class="admin-actions">
+            <button class="btn ghost" id="refreshBtn">새로고침</button>
+            <button class="btn primary" id="downloadBtn">데이터 다운로드</button>
+          </div>
         </div>
 
-        <div class="question" style="overflow-x: auto">
-          <table style="width: 100%; border-collapse: collapse; min-width: 980px">
-            <thead>
-              <tr>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">번호</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">학과</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">입학유형</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">성별</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">출생연도</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">최종학력</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">국적</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">글쓰기 성적</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">당해학기 성적</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q1</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q2</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q3</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q4</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q5</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q6</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q7</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q8</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q9</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e7edf5">Q10</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding: 8px">1</td>
-                <td style="padding: 8px">국문과</td>
-                <td style="padding: 8px">신입</td>
-                <td style="padding: 8px">여</td>
-                <td style="padding: 8px">1999</td>
-                <td style="padding: 8px">학사</td>
-                <td style="padding: 8px">대한민국</td>
-                <td style="padding: 8px">72.3</td>
-                <td style="padding: 8px">3.8</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">X</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">X</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">O</td>
-                <td style="padding: 8px">X</td>
-                <td style="padding: 8px">O</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">전체 참여자</div>
+            <div class="kpi-value">128명</div>
+            <div class="kpi-desc">당일 참여 24명</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">진단 완료율</div>
+            <div class="kpi-value">71.7%</div>
+            <div class="kpi-desc kpi-good">전주 대비 +4.8%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">평균 글쓰기 성적</div>
+            <div class="kpi-value">68.5점</div>
+            <div class="kpi-desc">최고 91.2 · 최저 31.4</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">주의 필요 대상</div>
+            <div class="kpi-value">14명</div>
+            <div class="kpi-desc kpi-warn">어문 규범 40점 미만</div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-top">
+            <h2 class="section-title">영역별 평균 점수</h2>
+          </div>
+          <div class="overview-grid">
+            <div class="mini-item">
+              <b>적확한 어휘 사용</b><span>71.7점</span>
+            </div>
+            <div class="score-bar"><div class="score-fill" style="width: 71.7%"></div></div>
+            <div class="mini-item">
+              <b>어문 규범의 이해</b><span>20.2점</span>
+            </div>
+            <div class="score-bar"><div class="score-fill" style="width: 20.2%"></div></div>
+            <div class="mini-item">
+              <b>글의 조직 능력</b><span>23.8점</span>
+            </div>
+            <div class="score-bar"><div class="score-fill" style="width: 23.8%"></div></div>
+            <div class="mini-item">
+              <b>적절한 문장</b><span>64.1점</span>
+            </div>
+            <div class="score-bar"><div class="score-fill" style="width: 64.1%"></div></div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-top">
+            <h2 class="section-title">참여자 데이터</h2>
+            <div class="filters">
+              <input class="filter-input" id="searchInput" placeholder="학과 / 번호 검색" />
+              <select class="filter-input" id="typeFilter">
+                <option value="all">입학유형 전체</option>
+                <option value="신입">신입</option>
+                <option value="편입">편입</option>
+              </select>
+              <select class="filter-input" id="genderFilter">
+                <option value="all">성별 전체</option>
+                <option value="남">남</option>
+                <option value="여">여</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>학과</th>
+                  <th>입학유형</th>
+                  <th>성별</th>
+                  <th>출생연도</th>
+                  <th>최종학력</th>
+                  <th>국적</th>
+                  <th>글쓰기 성적</th>
+                  <th>당해학기 성적</th>
+                  <th>Q1</th>
+                  <th>Q2</th>
+                  <th>Q3</th>
+                  <th>Q4</th>
+                  <th>Q5</th>
+                  <th>Q6</th>
+                  <th>Q7</th>
+                  <th>Q8</th>
+                  <th>Q9</th>
+                  <th>Q10</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
     </main>
     <script src="./font-controls.js"></script>
+    <script>
+      const data = [
+        {
+          no: 1,
+          major: "국문과",
+          type: "신입",
+          gender: "여",
+          birth: "1999",
+          edu: "학사",
+          nation: "대한민국",
+          writing: 72.3,
+          semester: 3.8,
+          q: ["O", "O", "X", "O", "O", "X", "O", "O", "X", "O"],
+        },
+        {
+          no: 2,
+          major: "행정학과",
+          type: "편입",
+          gender: "남",
+          birth: "1996",
+          edu: "전문학사",
+          nation: "대한민국",
+          writing: 64.1,
+          semester: 3.2,
+          q: ["O", "X", "O", "O", "X", "X", "O", "O", "O", "X"],
+        },
+        {
+          no: 3,
+          major: "영문과",
+          type: "신입",
+          gender: "여",
+          birth: "2001",
+          edu: "고졸",
+          nation: "대한민국",
+          writing: 81.4,
+          semester: 4.0,
+          q: ["O", "O", "O", "O", "O", "O", "O", "X", "O", "O"],
+        },
+        {
+          no: 4,
+          major: "컴퓨터과학과",
+          type: "편입",
+          gender: "남",
+          birth: "1994",
+          edu: "학사",
+          nation: "대한민국",
+          writing: 53.8,
+          semester: 2.8,
+          q: ["X", "X", "O", "X", "O", "X", "O", "X", "O", "O"],
+        },
+      ];
+
+      const tableBody = document.getElementById("adminTableBody");
+      const searchInput = document.getElementById("searchInput");
+      const typeFilter = document.getElementById("typeFilter");
+      const genderFilter = document.getElementById("genderFilter");
+
+      const toPill = (value) =>
+        `<span class="result-pill ${value === "O" ? "ok" : "no"}">${value}</span>`;
+
+      const renderRows = () => {
+        const keyword = searchInput.value.trim();
+        const type = typeFilter.value;
+        const gender = genderFilter.value;
+
+        const filtered = data.filter((row) => {
+          const byKeyword = keyword === "" || `${row.no}${row.major}`.includes(keyword);
+          const byType = type === "all" || row.type === type;
+          const byGender = gender === "all" || row.gender === gender;
+          return byKeyword && byType && byGender;
+        });
+
+        tableBody.innerHTML = filtered
+          .map(
+            (row) => `
+          <tr>
+            <td>${row.no}</td>
+            <td>${row.major}</td>
+            <td>${row.type}</td>
+            <td>${row.gender}</td>
+            <td>${row.birth}</td>
+            <td>${row.edu}</td>
+            <td>${row.nation}</td>
+            <td>${row.writing}</td>
+            <td>${row.semester}</td>
+            ${row.q.map((value) => `<td>${toPill(value)}</td>`).join("")}
+          </tr>
+        `
+          )
+          .join("");
+      };
+
+      const toCsv = (rows) => {
+        const header = [
+          "번호",
+          "학과",
+          "입학유형",
+          "성별",
+          "출생연도",
+          "최종학력",
+          "국적",
+          "글쓰기 성적",
+          "당해학기 성적",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "Q5",
+          "Q6",
+          "Q7",
+          "Q8",
+          "Q9",
+          "Q10",
+        ];
+        const lines = rows.map((r) => [r.no, r.major, r.type, r.gender, r.birth, r.edu, r.nation, r.writing, r.semester, ...r.q]);
+        return [header, ...lines].map((line) => line.join(",")).join("\n");
+      };
+
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        const blob = new Blob([toCsv(data)], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "bangsong-admin-data.csv";
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById("refreshBtn").addEventListener("click", renderRows);
+      searchInput.addEventListener("input", renderRows);
+      typeFilter.addEventListener("change", renderRows);
+      genderFilter.addEventListener("change", renderRows);
+
+      renderRows();
+    </script>
   </body>
 </html>
