@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>진단결과</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="topbar">
+        <div class="breadcrumb">Home &gt; 글쓰기 기초능력 진단 안내 &gt; 글쓰기 기초능력 진단 &gt; 개인배경 조사 &gt; 진단결과</div>
+      </div>
+
+      <div class="grid exam">
+        <section class="card">
+          <h2 style="margin: 0">글쓰기 기초능력 진단결과</h2>
+          <p class="muted">* 진단영역 옆의 항목을 클릭하면 문항별 정답과 해설을 볼 수 있습니다.</p>
+
+          <div class="score-row">
+            <span class="score-label">적확한 어휘 사용</span>
+            <div class="bar"><div class="fill" style="width: 80%"></div></div>
+            <strong>4/5</strong>
+          </div>
+          <div class="score-row">
+            <span class="score-label">어문 규범의 이해</span>
+            <div class="bar"><div class="fill" style="width: 40%"></div></div>
+            <strong>2/5</strong>
+          </div>
+          <div class="score-row">
+            <span class="score-label">글의 조직 능력</span>
+            <div class="bar"><div class="fill" style="width: 60%"></div></div>
+            <strong>3/5</strong>
+          </div>
+          <div class="score-row">
+            <span class="score-label">적절한 문장</span>
+            <div class="bar"><div class="fill" style="width: 80%"></div></div>
+            <strong>4/5</strong>
+          </div>
+
+          <div class="status-list" id="statusList"></div>
+
+          <div class="nav-row">
+            <a class="btn ghost" href="./profile.html">이전</a>
+            <a class="btn primary" href="./explanation.html">문항별 해설 보기</a>
+          </div>
+        </section>
+
+        <aside class="card question-panel">
+          <h4>나의 점수</h4>
+          <div class="kpi" style="font-size: 42px">13/20</div>
+          <div class="tiny">문항별 정오와 해설 보기 제공</div>
+        </aside>
+      </div>
+    </main>
+    <script src="./font-controls.js"></script>
+    <script src="./exam-data.js"></script>
+    <script>
+      const statusList = document.getElementById("statusList");
+      QUESTION_STATUS.forEach((q) => {
+        const row = document.createElement("div");
+        row.className = "status-item";
+        row.innerHTML = `
+          <div class="num">${q.no}</div>
+          <div class="ox ${q.isCorrect ? "ok" : "no"}">${q.isCorrect ? "O" : "X"}</div>
+          <div class="qtxt">${q.area}</div>
+        `;
+        statusList.appendChild(row);
+      });
+    </script>
+  </body>
+</html>

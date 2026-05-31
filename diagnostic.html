@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>글쓰기 기초능력 진단</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="topbar">
+        <div class="breadcrumb">Home &gt; 글쓰기 기초능력 진단 안내 &gt; 글쓰기 기초능력 진단</div>
+        <span class="tag">진행 중</span>
+      </div>
+
+      <section class="card">
+        <div class="mini-head">
+          <strong style="font-size: 15px">방송대 글쓰기 기초능력 진단</strong>
+          <div class="tiny">글자크기 가 가 · 남은시간 <strong id="timer">39:00</strong></div>
+        </div>
+
+        <div class="grid exam">
+          <article>
+            <div class="progress-wrap">
+              <div class="progress-head"><strong id="progressText">8 / 20 문항</strong><span id="progressPct">40%</span></div>
+              <div class="bar"><div class="fill" id="progressFill" style="width: 40%"></div></div>
+            </div>
+
+            <div class="question" style="margin-top: 14px">
+              <h2 id="questionTitle" style="margin: 0; font-size: 22px">문항 2</h2>
+              <p class="muted" id="questionPrompt"></p>
+              <p id="questionStem"></p>
+              <div id="choiceList"></div>
+            </div>
+
+            <div class="nav-row">
+              <a class="btn ghost" href="./guide.html">이전</a>
+              <div style="display: flex; gap: 8px">
+                <a class="btn ghost" href="./save.html">저장하기</a>
+                <a class="btn primary" href="./profile.html">다음</a>
+              </div>
+            </div>
+          </article>
+
+          <aside class="question-panel card" style="padding: 14px">
+            <h4>문항 · 응답</h4>
+            <div class="q-grid" id="qGrid"></div>
+            <div class="q-state">선택 문항은 파란색으로 표시됩니다.</div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <script src="./font-controls.js"></script>
+    <script src="./exam-data.js"></script>
+    <script>
+      const qGrid = document.getElementById("qGrid");
+      const questionTitle = document.getElementById("questionTitle");
+      const questionPrompt = document.getElementById("questionPrompt");
+      const questionStem = document.getElementById("questionStem");
+      const choiceList = document.getElementById("choiceList");
+      const progressText = document.getElementById("progressText");
+      const progressPct = document.getElementById("progressPct");
+      const progressFill = document.getElementById("progressFill");
+
+      const progressCount = 8;
+      let currentNo = 2;
+      let answeredNos = new Set(Array.from({ length: progressCount }, (_, i) => i + 1));
+      const selectedChoiceByQuestion = {};
+
+      const renderQuestionBody = () => {
+        const current = DIAGNOSTIC_QUESTIONS[currentNo - 1];
+        questionTitle.textContent = `문항 ${current.no}`;
+        questionPrompt.textContent = current.prompt;
+        questionStem.textContent = current.stem;
+        choiceList.innerHTML = "";
+        current.choices.forEach((choice, idx) => {
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = "choice";
+          if (selectedChoiceByQuestion[current.no] === idx) el.classList.add("selected");
+          el.textContent = choice;
+          el.addEventListener("click", () => {
+            selectedChoiceByQuestion[current.no] = idx;
+            answeredNos.add(current.no);
+            renderQuestionBody();
+            renderQuestionGrid();
+          });
+          choiceList.appendChild(el);
+        });
+      };
+
+      const renderQuestionGrid = () => {
+        qGrid.innerHTML = "";
+        QUESTION_STATUS.forEach((q) => {
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = "q-btn";
+          if (answeredNos.has(q.no)) el.classList.add("done");
+          if (q.no === currentNo) el.classList.add("active");
+          el.textContent = q.no;
+          el.addEventListener("click", () => {
+            currentNo = q.no;
+            answeredNos.add(q.no);
+            renderQuestionGrid();
+          });
+          qGrid.appendChild(el);
+        });
+
+        const solved = answeredNos.size;
+        const pct = Math.round((solved / EXAM_META.totalQuestions) * 100);
+        progressText.textContent = `${solved} / ${EXAM_META.totalQuestions} 문항`;
+        progressPct.textContent = `${pct}%`;
+        progressFill.style.width = `${pct}%`;
+      };
+
+      renderQuestionBody();
+      renderQuestionGrid();
+
+      const timer = document.getElementById("timer");
+      let remain = 39 * 60;
+      setInterval(() => {
+        if (remain <= 0) return;
+        remain -= 1;
+        const min = String(Math.floor(remain / 60)).padStart(2, "0");
+        const sec = String(remain % 60).padStart(2, "0");
+        timer.textContent = `${min}:${sec}`;
+      }, 1000);
+    </script>
+  </body>
+</html>
