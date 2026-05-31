@@ -20,12 +20,12 @@
       </div>
 
       <section class="card" style="max-width: 620px; margin: 0 auto">
-        <h2>프로젝트 코드로 입장</h2>
-        <p class="muted">관리자가 전달한 프로젝트 코드(또는 링크)로 해당 그룹 진단에 참여하세요.</p>
+        <h2>진단코드로 입장</h2>
+        <p class="muted">관리자가 전달한 진단코드(또는 링크)로 해당 그룹 진단에 참여하세요.</p>
 
         <div class="steps">
           <div class="step">
-            <div class="title">프로젝트 코드</div>
+            <div class="title">진단코드</div>
             <input id="projectCode" class="field-input" placeholder="예: a3f19c7d" />
           </div>
         </div>
@@ -49,7 +49,7 @@
       btn.addEventListener("click", async () => {
         const code = codeInput.value.trim();
         if (!code) {
-          msg.textContent = "프로젝트 코드를 입력해주세요.";
+          msg.textContent = "진단코드를 입력해주세요.";
           return;
         }
 
@@ -57,7 +57,7 @@
         try {
           const project = await window.AppBackend.getProjectByCode(code);
           if (!project) {
-            msg.textContent = "해당 코드의 프로젝트를 찾을 수 없습니다.";
+            msg.textContent = "해당 진단코드의 프로젝트를 찾을 수 없습니다.";
             return;
           }
           window.location.href = `./diagnostic.html?project=${encodeURIComponent(project.slug)}`;

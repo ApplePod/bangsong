@@ -749,7 +749,7 @@
                   <b>${p.name}</b>
                   <span class="tag">${p.is_active ? "활성" : "비활성"}</span>
                 </div>
-                <div class="slug">slug: ${p.slug} · code: ${p.access_code || "-"}</div>
+                <div class="slug">slug: ${p.slug} · 진단코드: ${p.access_code || "-"}</div>
                 <div class="project-actions">
                   <button class="btn ghost open-project">문항 관리</button>
                   <a class="btn primary" href="./diagnostic.html?project=${encodeURIComponent(p.slug)}">학생 링크</a>

@@ -44,7 +44,7 @@
               <a class="btn ghost" href="./guide.html">이전</a>
               <div class="btn-row" style="margin-top: 0">
                 <a class="btn ghost" href="./save.html">저장하기</a>
-                <a class="btn primary" href="./profile.html">다음</a>
+                <button type="button" class="btn primary" id="nextSubmitBtn">다음</button>
               </div>
             </div>
           </article>
@@ -71,6 +71,7 @@
       const progressText = document.getElementById("progressText");
       const progressPct = document.getElementById("progressPct");
       const progressFill = document.getElementById("progressFill");
+      const nextSubmitBtn = document.getElementById("nextSubmitBtn");
 
       let activeQuestions = [...DIAGNOSTIC_QUESTIONS];
       let currentNo = activeQuestions[0]?.no || 1;
@@ -78,6 +79,13 @@
       const selectedChoiceByQuestion = {};
 
       const findQuestion = (no) => activeQuestions.find((q) => q.no === no) || activeQuestions[0];
+      const getCurrentIndex = () => activeQuestions.findIndex((q) => q.no === currentNo);
+
+      const updateNextSubmitButton = () => {
+        const currentIdx = getCurrentIndex();
+        const isLast = currentIdx === activeQuestions.length - 1;
+        nextSubmitBtn.textContent = isLast ? "제출하기" : "다음";
+      };
 
       const renderQuestionBody = () => {
         const current = findQuestion(currentNo);
@@ -120,7 +128,6 @@
           el.textContent = q.no;
           el.addEventListener("click", () => {
             currentNo = q.no;
-            answeredNos.add(q.no);
             renderQuestionBody();
             renderQuestionGrid();
           });
@@ -133,7 +140,32 @@
         progressText.textContent = `${solved} / ${total} 문항`;
         progressPct.textContent = `${pct}%`;
         progressFill.style.width = `${pct}%`;
+        updateNextSubmitButton();
       };
+
+      nextSubmitBtn.addEventListener("click", () => {
+        const currentIdx = getCurrentIndex();
+        const isLast = currentIdx === activeQuestions.length - 1;
+
+        if (!isLast) {
+          currentNo = activeQuestions[currentIdx + 1].no;
+          renderQuestionBody();
+          renderQuestionGrid();
+          return;
+        }
+
+        const unanswered = activeQuestions.filter((q) => selectedChoiceByQuestion[q.no] === undefined);
+        if (unanswered.length > 0) {
+          const firstUnanswered = unanswered[0];
+          alert(`아직 ${unanswered.length}문항이 미응답입니다. 문항 ${firstUnanswered.no}(으)로 이동합니다.`);
+          currentNo = firstUnanswered.no;
+          renderQuestionBody();
+          renderQuestionGrid();
+          return;
+        }
+
+        window.location.href = "./profile.html";
+      });
 
       const initializeProjectQuestions = async () => {
         const params = new URLSearchParams(window.location.search);
