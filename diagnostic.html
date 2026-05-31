@@ -107,6 +107,7 @@
           el.addEventListener("click", () => {
             currentNo = q.no;
             answeredNos.add(q.no);
+            renderQuestionBody();
             renderQuestionGrid();
           });
           qGrid.appendChild(el);
