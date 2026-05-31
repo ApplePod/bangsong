@@ -12,6 +12,10 @@
     />
     <link rel="stylesheet" href="./app.css" />
     <style>
+      [hidden] {
+        display: none !important;
+      }
+
       .admin-shell {
         display: grid;
         gap: 12px;
@@ -577,7 +581,6 @@
 
       const backendConfig = window.AppBackend?.getConfig?.() || {};
       if (backendConfig.anonKey) anonKeyInput.value = backendConfig.anonKey;
-      const ADMIN_AUTH_STORAGE_KEY = "writingDiagAdminAuthed";
       const ADMIN_ID = "admin";
       const ADMIN_PW = "admin";
       let dashboardInitialized = false;
@@ -825,7 +828,6 @@
             throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
           }
 
-          localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, "true");
           adminAuthError.textContent = "";
           setAdminAuthedView(true);
           initDashboard();
@@ -842,26 +844,14 @@
         } catch (_err) {
           // ignore sign-out errors and still hide dashboard on client
         }
-        localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
         setAdminAuthedView(false);
         adminIdInput.value = "";
         adminPwInput.value = "";
         adminAuthError.textContent = "";
       });
 
-      const boot = async () => {
-        try {
-          const user = await window.AppBackend.getSessionUser();
-          const localAuthed = localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === "true";
-          const hasAdminSession = localAuthed || Boolean(user);
-          setAdminAuthedView(hasAdminSession);
-          if (hasAdminSession) initDashboard();
-        } catch (_e) {
-          setAdminAuthedView(false);
-        }
-      };
-
-      boot();
+      // Always show login first. Dashboard appears only after successful login.
+      setAdminAuthedView(false);
     </script>
   </body>
 </html>
